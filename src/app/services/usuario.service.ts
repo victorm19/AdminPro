@@ -6,6 +6,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { LoginForm } from '../interfaces/login-form.interface';
 import { RegisterForm } from '../interfaces/register-form.interface';
+import { Usuario } from '../models/usuario.model';
 
 const base_url = environment.base_url;
 declare const gapi: any;
@@ -16,11 +17,20 @@ declare const gapi: any;
 export class UsuarioService {
 
   public auth2: any;
+  public usuario: Usuario;
 
   constructor(  private readonly http: HttpClient,
                 private router: Router,
                 private ngZone: NgZone) { 
     this.googleInit();
+  }
+
+  get token(): string {
+    return localStorage.getItem('token') || '';
+  }
+
+  get uid(): string {
+    return this.usuario.uid || '';
   }
 
   async googleInit() {
@@ -30,8 +40,6 @@ export class UsuarioService {
           cookiepolicy: 'single_host_origin',
         });
       });
-
-
   }
 
   logout() {
@@ -45,16 +53,17 @@ export class UsuarioService {
   }
 
   validarToken(): Observable<boolean> {
-    const token = localStorage.getItem('token') || '';
     return this.http.get(`${base_url}/login/renew`, {
       headers: {
-        'x-token': token
+        'x-token': this.token
       }
     }).pipe(
-        tap((resp: any) => {
+        map((resp: any) => {
+          const { email, google, nombre, role, img = '', uid } = resp.usuario;
+          this.usuario = new Usuario(nombre, email, '', google, img, role, uid);
           localStorage.setItem('token', resp.token)
+          return true
         }),
-        map( resp => true),
         catchError( error => of(false) )
     );
   }
@@ -66,6 +75,18 @@ export class UsuarioService {
         localStorage.setItem('token', resp.token)
       })
     );
+  }
+
+  actualizarUsuario(formData: {email: string, nombre: string, role: string}) {
+    formData = {
+      ...formData,
+      role: this.usuario.role
+    };
+    return this.http.put(`${base_url}/usuarios/${this.uid}`, formData, {
+      headers: {
+        'x-token': this.token
+      }
+    })
   }
 
   login(formData: LoginForm) {
