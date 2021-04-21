@@ -1,3 +1,4 @@
+import { UsuariosComponent } from './mantenimientos/usuarios/usuarios.component';
 import { Routes, RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { PagesComponent } from './pages.component';
@@ -25,6 +26,8 @@ const routes: Routes = [
             { path: 'rxjs', component: RxjsComponent, data: { titulo: 'Rxjs'} },
             { path: 'perfil', component: PerfilComponent, data: { titulo: 'Perfil de usuario'} },
 
+            // Mantenimientos
+            { path: 'usuarios', component: UsuariosComponent, data: { titulo: 'Usuarios de aplicación'} },
         ]
     }
 ];
