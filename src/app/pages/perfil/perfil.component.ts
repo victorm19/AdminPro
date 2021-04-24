@@ -32,7 +32,6 @@ export class PerfilComponent implements OnInit {
   }
 
   actualizarPerfil() {
-    console.log(this.perfilForm.value);
     this.usuarioService
       .actualizarUsuario(this.perfilForm.value)
       .subscribe(() => {
@@ -58,7 +57,6 @@ export class PerfilComponent implements OnInit {
 
     reader.onloadend = () => {
       this.imgTemp = reader.result;
-      console.log(reader.result);
     }
   }
 

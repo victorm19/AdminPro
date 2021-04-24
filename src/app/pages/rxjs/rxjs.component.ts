@@ -13,14 +13,7 @@ export class RxjsComponent implements OnInit, OnDestroy {
   intervalSubs: Subscription;
 
   constructor() { 
-  //  this.retornaObservable().pipe(
-  //   retry(2)
-  // ).subscribe(
-  //   valor => console.log('Subs', valor),
-  //   error => console.warn('Error ', error),
-  //   () => console.info('Termino el observable')
-  // );
-  this.intervalSubs = this.retornaIntervalo().subscribe(console.log)
+  this.intervalSubs = this.retornaIntervalo().subscribe();
     }
 
   ngOnInit(): void {

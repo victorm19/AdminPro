@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Usuario } from '../models/usuario.model';
+import { Hospital } from '../models/hospital.model';
 
 const base_url = environment.base_url;
 
@@ -37,7 +38,10 @@ export class BusquedasService {
         switch(tipo) {
           case 'usuarios':
             return this.transformarUsuarios(resp.resultados)
-            break
+          case 'hospitales':
+            return resp.resultados;
+          case 'medicos':
+            return resp.resultados;
           default:
             return []
         }
