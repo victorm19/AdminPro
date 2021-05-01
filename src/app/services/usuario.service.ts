@@ -43,6 +43,10 @@ export class UsuarioService {
     };
   }
 
+  get role(): 'ADMIN_ROLE' | 'USER_ROLE' {
+    return this.usuario.role;
+  }
+
   async googleInit() {
     await gapi.load('auth2', () => {
       this.auth2 = gapi.auth2.init({
@@ -55,12 +59,18 @@ export class UsuarioService {
 
   logout() {
     localStorage.removeItem('token');
+    localStorage.removeItem('menu');
 
     this.auth2.signOut().then(() => {
       this.ngZone.run(() => {
         this.router.navigateByUrl('/login');
       });
     });
+  }
+
+  guardarLocalStorage(token: string, menu: any) {
+    localStorage.setItem('token', token);
+    localStorage.setItem('menu', JSON.stringify(menu));
   }
 
   validarToken(): Observable<boolean> {
@@ -74,7 +84,7 @@ export class UsuarioService {
         map((resp: any) => {
           const { email, google, nombre, role, img = '', uid } = resp.usuario;
           this.usuario = new Usuario(nombre, email, '', google, img, role, uid);
-          localStorage.setItem('token', resp.token);
+         this.guardarLocalStorage(resp.token, resp.menu);
           return true;
         }),
         catchError((error) => of(false))
@@ -84,7 +94,7 @@ export class UsuarioService {
   crearUsuario(formData: RegisterForm) {
     return this.http.post(`${base_url}/usuarios`, formData).pipe(
       tap((resp: any) => {
-        localStorage.setItem('token', resp.token);
+        this.guardarLocalStorage(resp.token, resp.menu);
       })
     );
   }
@@ -104,7 +114,7 @@ export class UsuarioService {
   login(formData: LoginForm) {
     return this.http.post(`${base_url}/login`, formData).pipe(
       tap((resp: any) => {
-        localStorage.setItem('token', resp.token);
+        this.guardarLocalStorage(resp.token, resp.menu);
       })
     );
   }
@@ -112,7 +122,7 @@ export class UsuarioService {
   loginGoogle(token) {
     return this.http.post(`${base_url}/login/google`, { token }).pipe(
       tap((resp: any) => {
-        localStorage.setItem('token', resp.token);
+        this.guardarLocalStorage(resp.token, resp.menu);
       })
     );
   }
@@ -139,6 +149,7 @@ export class UsuarioService {
   }
 
   cambiarRoleUser(usuario: Usuario) {
-    return this.http.put(`${base_url}/usuarios/${this.usuario.uid}`, usuario, this.headers);
+    return this.http.put(`${base_url}/usuarios/${usuario.uid}`, usuario, this.headers);
+
   }
 }

@@ -11,12 +11,20 @@ export class HeaderComponent {
 
   public usuario: Usuario;
 
-  constructor(  private readonly usuarioService: UsuarioService ) { 
+  constructor(  private readonly usuarioService: UsuarioService,
+                private readonly router: Router ) { 
     this.usuario = usuarioService.usuario;
   }
 
   logout() {
     this.usuarioService.logout();
+  }
+
+  Buscar(termino: string) {
+    if( termino.length === 0) {
+      return;
+    } 
+    this.router.navigateByUrl(`/dashboard/buscar/${termino}`)
   }
 
 }
